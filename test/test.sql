@@ -1,12 +1,10 @@
-drop database if exists XPTO
-create database XPTO
-use XPTO
+drop database if exists xpto
+create database xpto
+use xpto
 
 create table funcionarios(
     matricula int not null auto_increment primary key,
     nomeCompleto varchar(153) not null,
-    dataDesligamento date not null,
-    ultimoSalario decimal (6,2) not null,
-    aliquota float (4,3)
-    irrp float (4,1)
+    dataDesligamento varchar(10) not null,
+    ultimoSalario decimal (6,2) not null
 );
