@@ -1,0 +1,7 @@
+{
+    "mysql":{
+        "user": "root",
+        "database": "getninja",
+        "host": "localhost"
+    }
+}
