@@ -4,7 +4,7 @@ const route = express.Router();
 
 const usuarioCtr = require('./src/ctr/usuarioCtr');
 const alertaCtr = require('./src/ctr/alertaCtr');
-const localCtr = require('./src/ctr/LocalCtr');
+const localCtr = require('./src/ctr/localCtr');
 
 route.post('/usuario', usuarioCtr.create);
 route.get('/usuario', usuarioCtr.read);
@@ -23,5 +23,7 @@ route.get('/local', localCtr.read);
 route.get('/local/:id', localCtr.read);
 route.put('/local/:id', localCtr.update);
 route.delete('/local/:id', localCtr.remove);
+
+
 
 module.exports = route;
