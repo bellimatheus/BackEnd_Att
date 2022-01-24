@@ -1,5 +1,5 @@
 
-const Alerta = require('../model/alerta')
+const Alerta = require('../model/Alerta')
 
 const create = async (req, res) => {
     const data = req.body;
