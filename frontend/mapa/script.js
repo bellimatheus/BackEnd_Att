@@ -1,5 +1,7 @@
 let map;
 
+let CidadeAlerta;
+
 function initMap() {
   map = new google.maps.Map(document.querySelector(".map"), {
     center: { lat: -34.397, lng: 150.644 },
@@ -7,10 +9,11 @@ function initMap() {
   });
 
   map.addListener("click", (data) => {
-    console.log(data.latLng.lat(), data.latLng.lng() );
+    
     let coord = {lat: data.latLng.lat(), lng: data.latLng.lng() }
 
-    addMarker(coord, "Teste", "../assets/radar.png");
+    // addMarker(coord, "Teste", "../assets/radar.png");
+    CidadeAlerta = coord;
   });
 
 
