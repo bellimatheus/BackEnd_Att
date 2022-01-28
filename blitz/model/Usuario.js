@@ -7,6 +7,12 @@ class Usuario extends Model {
                 email: {
                     type: DataTypes.STRING(100),
                     allowNull: false,
+                    unique: true,
+                    validate: {
+                        isEmail: {
+                            msg: "Must be a valid email address",
+                        }
+                    }
                 },
                 senha: {
                     type: DataTypes.STRING(150),
