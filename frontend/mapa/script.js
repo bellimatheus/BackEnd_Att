@@ -1,6 +1,7 @@
 
 const alerta = document.querySelector("#alerta");
 const cadastrar = document.querySelector("#cadastrar");
+const modal = document.querySelector(".modal")
 const body = document.querySelector("body");
 
 let map;
@@ -18,8 +19,9 @@ function initMap() {
 
     // addMarker(coord, "Teste", "../assets/radar.png");
     CidadeAlerta = coord;
-    alerta.hidden = false
-    cadastrar.hidden = false
+
+    showModal();
+
   });
 
 
@@ -29,7 +31,7 @@ function initMap() {
 
     map.setCenter(coord);
 
-    addMarker(coord, "Minha localização", "../assets/radar.png");
+    addMarker(coord, "Minha localização", "../assets/localiz.png");
 
   })
 }
@@ -54,9 +56,8 @@ function cadastro() {
   .then(data => { 
       if(data.id != undefined){
         let tipo = alerta.value;
-        addMarker(CidadeAlerta, tipo, "../assets/radar.png");
-        alerta.hidden = true;
-        cadastrar.hidden = true;
+        addMarker(CidadeAlerta, tipo, "../assets/"+tipo+".png");
+        closeModal();
 
       }else{
         alert("Falha encontrada em alerta")
@@ -92,7 +93,8 @@ function CarrMarcadores(){
       let coorden = localizacao.coordenadas.split(',');
       let coord = {lat: Number(coorden[0]), lng:  Number(coorden[1])};
 
-      addMarker(coord, localizacao.alertum.tipo, "../assets/radar.png")
+      let imagem = "../assets/" + localizacao.alertum.id + ".png"
+      addMarker(coord, localizacao.alertum.tipo, imagem)
     });
   })
 
@@ -116,4 +118,12 @@ function CadAlerta(){
       alerta.appendChild(op);
     });
   })
+}
+
+function showModal() {
+  modal.style.display = "flex";
+}
+
+function closeModal(){
+  modal.style.display = "none"
 }

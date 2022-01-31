@@ -8,18 +8,37 @@
     <title>Mapa</title>
 </head>
 <body onload="iniciar()">
-    <div class="map">
-        
+    <div class="container">
+        <header>
+            <img src="../assets/cardapio.png" alt="Menu" id="Menu">
+            <img src="../assets/MicrosoftTeams-image.png" alt="logo" class="logo">
+        </header>
+        <div class="map"></div>
     </div>
-    <select id="alerta" hidden>
-        <!-- <option>Radar</option>
-        <option>Acidente</option>
-        <option>Blitz</option> -->
-    </select>
-    <button id="cadastrar" onclick="cadastro()" hidden>Cadastrar Alerta</button>
+    <div class="menu">
+        <span>
+            <img src="../assets/cancel.png" alt="fechar">
+        </span>
+        <ul>
+            <li>Configurações</li>
+            <li>Sair</li>
+        </ul>
+
+    </div>
+
+    <div class="modal" hidden>
+        <div class="form-modal">
+            <span onclick="closeModal()" id="closeBot">
+                <img src="../assets/cancel.png" alt="Fechar">
+            </span>
+            <select id="alerta" >
+            </select>
+            <button id="cadastrar" onclick="cadastro()">Cadastrar Alerta</button>
+        </div>
+    </div>
 </body>
 <script src="./script.js" ></script>
-<!-- AIzaSyBSSq9ld6ahsJUuDH8fOwR1ACqCb3SNe70 -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAaXxoy5hT3yqTpF85JVG_7xmaC4obZveQ&callback=initMap&v=weekly" async>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0xWCNQwnEqDZ7I7obm7rQzTD9ZfY8bYE&callback=initMap&v=weekly" async>
 </script>
 </html>
