@@ -1,70 +1,60 @@
-
 const alerta = document.querySelector("#alerta");
 const cadastrar = document.querySelector("#cadastrar");
-const modal = document.querySelector(".modal")
+const modal = document.querySelector(".modal");
 const body = document.querySelector("body");
-
-let map;
-let CidadeAlerta;
-
-function initMap() {
-  map = new google.maps.Map(document.querySelector(".map"), {
-    center: { lat: -34.397, lng: 150.644 },
-    zoom: 17,
-  });
-
-  map.addListener("click", (data) => {
-    
-    let coord = {lat: data.latLng.lat(), lng: data.latLng.lng() }
-
-    // addMarker(coord, "Teste", "../assets/radar.png");
-    CidadeAlerta = coord;
-
-    showModal();
-
-  });
+const menu = document.querySelector(".menu");
 
 
-  navigator.geolocation.getCurrentPosition((location) => {
-    console.log(location.coords.latitude, location.coords.longitude)
-    let coord = {lat: location.coords.latitude, lng: location.coords.longitude}
+var map;
+var meuAlerta;
 
-    map.setCenter(coord);
+function initMap() {    
+    map = new google.maps.Map(document.querySelector(".map"), {
+        center: { lat: -34.397, lng: 150.644 },
+        zoom: 18,
+    });
 
-    addMarker(coord, "Minha localização", "../assets/localiz.png");
+    map.addListener("click", (data) => {
+        let coord = { lat: data.latLng.lat(), lng: data.latLng.lng() };
+        //addMarker(coord, "Teste", "../assets/radar.png");
+        meuAlerta = coord;
+        showModal();
+    });
 
-  })
+    navigator.geolocation.getCurrentPosition((location) => {
+        let coord = { lat: location.coords.latitude, lng: location.coords.longitude};
+        map.setCenter(coord);
+        addMarker(coord, "Minha Localizacao", "../assets/localiz.png");
+    });
 }
 
+
 function cadastro() {
-  let data = JSON.stringify({
-    "id_user" : 1,
-    "id_alerta" : alerta.value,
-    "coordenadas" : CidadeAlerta.lat + CidadeAlerta.lng,
-    "ativo" : true
-  })
+    let data = JSON.stringify({
+        "id_user": 1,
+        "id_alerta": alerta.value,
+        "coordenadas": meuAlerta.lat + "," + meuAlerta.lng,
+        "ativo": true,
+    });
 
-  fetch("http://localhost:3000/local", {
-    "method" : "POST",
-    "headers" : {
-      "Content-Type" : "application/json"
-    },
-    body: data
-  })
-
-  .then(resp => { return resp.json() })
-  .then(data => { 
-      if(data.id != undefined){
-        let tipo = alerta.value;
-        addMarker(CidadeAlerta, tipo, "../assets/"+tipo+".png");
-        closeModal();
-
-      }else{
-        alert("Falha encontrada em alerta")
-      }
-  })
-
-
+    fetch("http://localhost:3000/local", {
+        method:"POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: data
+    })
+    
+    .then(resp => { return resp.json() })
+    .then(data => {
+        if(data.id != undefined){ 
+            let tipo = alerta.value;
+            addMarker(meuAlerta, tipo, "../assets/"+ tipo +".png");
+            closeModal();
+        }else {
+            alert("Falha ao informar alerta");
+        }
+    })
 }
 
 
@@ -78,46 +68,39 @@ function addMarker(coord, title, imagem){
   
 }
 
-function iniciar(){
-  CarrMarcadores();
-  CadAlerta();
+function inicializar() {
+    carregarMarcacoes();
+    carregarAlertas();
 }
 
 
 
-function CarrMarcadores(){
-  fetch("http://localhost:3000/local")
-  .then(resp => { return resp.json()})
-  .then(data => {
-    data.forEach(localizacao => {
-      let coorden = localizacao.coordenadas.split(',');
-      let coord = {lat: Number(coorden[0]), lng:  Number(coorden[1])};
+function carregarMarcacoes() {
+    fetch("http://localhost:3000/local")
+    .then(resp => { return resp.json() })
+    .then(data => {
+        data.forEach(localizacao => {
+            //localizacao.coordenadas -> '-22.701625501929453,-46.701625501929453'
+            let coordenadas = localizacao.coordenadas.split(',');
+            let coord = { lat: Number(coordenadas[0]), lng: Number(coordenadas[1]) };
 
-      let imagem = "../assets/" + localizacao.alertum.id + ".png"
-      addMarker(coord, localizacao.alertum.tipo, imagem)
-    });
-  })
-
-
-
-
+            let imagem = "../assets/" + localizacao.alertum.id + ".png";
+            addMarker(coord, localizacao.alertum.tipo, imagem);
+        });
+    })
 }
 
-function CadAlerta(){
-  fetch("http://localhost:3000/alerta")
-
-  .then(resp => {
-    return resp.json();
-  })
-  .then(data => {
-    data.forEach(alert => {
-      let op = document.createElement("option");
-      op.value = alert.id;
-      op.innerHTML = alert.tipo;
-
-      alerta.appendChild(op);
-    });
-  })
+function carregarAlertas() {
+    fetch("http://localhost:3000/alerta")
+    .then(resp => { return resp.json() })
+    .then(data => {
+        data.forEach(alert => {
+            let op = document.createElement("option");
+            op.value = alert.id;
+            op.innerHTML = alert.tipo;
+            alerta.appendChild(op);
+        })
+    })
 }
 
 function showModal() {
@@ -126,4 +109,11 @@ function showModal() {
 
 function closeModal(){
   modal.style.display = "none"
+}
+
+function showMenu(){
+  menu.style.left = "0px"
+}
+function closeMenu(){
+  menu.style.left = "-50vw"
 }
