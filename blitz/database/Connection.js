@@ -22,7 +22,7 @@ const sync = () => {
     Alerta.associate(sequelize.models);
     Local.associate(sequelize.models);
     
-    sequelize.sync({ force: false });
+    sequelize.sync({ force: true });
 }
 
 module.exports = {
