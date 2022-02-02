@@ -1,16 +1,45 @@
-const view = document.querySelector("#alerts")
+const view = document.querySelector("#alerts");
 const TB = document.querySelector('tbody');
+const img = document.querySelector('#imgUser');
+const emailUser = document.querySelector('#emailUser');
+const psw = document.querySelector('#pswUser');
+
+const cam = document.querySelector("#cam");
+const foto = document.querySelector("#foto");
+
+const userData = JSON.parse(localStorage.getItem('userdata'))
+
+var imagem = "";
+
+cam.addEventListener("click", () => {
+    foto.click();
+  });
+  
+  foto.addEventListener("change", (e) => {
+    let file = e.target.files[0];
+    let reader = new FileReader();
+    reader.onload = (data) => {
+      //console.log(data.target.result)
+      imagem = data.target.result;
+      img.src = imagem
+    };
+  
+    reader.readAsDataURL(file);
+  });
+  
+
+
 
 function load() {
     carregarAlertas();
     carregarMeusAlertas();
+    carregarDados();
+    
     
 }
 
 function carregarMeusAlertas(){
-    let idUser = JSON.parse(localStorage.getItem('userdata')).id;
-    console.log(idUser)
-
+    let idUser = userData.id;
     fetch("http://localhost:3000/local?id_user="+ idUser)
 
     .then(resp => {return resp.json()})
@@ -62,6 +91,39 @@ function carregarAlertas(){
             alerta.appendChild(label);
             view.appendChild(alerta);
         });
+    })
+}
+
+function carregarDados() {
+
+    img.src = (userData.foto !== "") ? userData.foto: '../assets/ava.png';
+    emailUser.value = userData.email;
+    
+}
+
+function upDados() {
+    let data = {};
+
+    if(psw.value !== "") data.senha = md5(psw.value) 
+    if(emailUser !== userData.email) data.email = emailUser.value
+    if(img.src !== userData.foto) data.foto = img.src
+
+    fetch("http://localhost:3000/usuario/" +userData.id, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+    })
+    .then(resp => {return resp.json()})
+    .then(data => {
+        if(data.length > 0){
+            localStorage.setItem('userdata', JSON.stringify(data[0]))
+            window.location.reload();
+            
+        }else{
+            alert("Nao foi possivrl atualizar os dados");
+        }
     })
 }
 

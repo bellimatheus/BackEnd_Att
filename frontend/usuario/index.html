@@ -12,9 +12,12 @@
 <body onload="load()">
     <div class="container">
         <div class="dados">
-            <img src="" alt="">
-            <input type="text">
-            <input type="password">
+            <img src="" id="imgUser" width="150">
+            <input type="text" id="emailUser">
+            <input type="password" id="pswUser">
+            <input type="file" id="foto" hidden>
+            <img src="../assets/camera.png" id="cam" alt="Camera" width="32" >
+            <button>Update</button>
         
         </div>
         <div class="alertas">
@@ -30,6 +33,11 @@
                 <h2>Meus Alertas</h2>
                 <img src="../assets/setas-para-cima.png" onclick="mostrarMeusAlertas(this)" class="seta up" alt="Seta">
             </div>
+
+
+
+
+            
 
             <div class="containerdata">
                 <table id="show">
@@ -49,6 +57,7 @@
     </div>
     
 </body>
+<script src="../global/md5.js"> </script>
 <script src="script.js"></script>
 
 </html>
