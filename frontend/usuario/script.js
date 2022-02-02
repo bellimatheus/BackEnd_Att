@@ -1,13 +1,15 @@
-const view = document.querySelector(".vizu")
+const view = document.querySelector("#alerts")
 const TB = document.querySelector('tbody');
 
 function load() {
     carregarAlertas();
     carregarMeusAlertas();
+    
 }
 
 function carregarMeusAlertas(){
-    let idUser = JSON.parse(localStorage.getItem('userdate').id)
+    let idUser = JSON.parse(localStorage.getItem('userdata')).id;
+    console.log(idUser)
 
     fetch("http://localhost:3000/local?id_user="+ idUser)
 
@@ -41,11 +43,13 @@ function carregarMeusAlertas(){
 function carregarAlertas(){
     fetch("http://localhost:3000/alerta")
     
+    
     .then(resp => {return resp.json()})
     .then(data => {
         data.forEach(e => {
             let label = document.createElement("label");
             let checkbox = document.createElement("input");
+            let alerta = document.createElement("div")
             
             label.innerHTML = e.tipo;
             label.for = e.id;
@@ -54,8 +58,15 @@ function carregarAlertas(){
             checkbox.name = e.id;
             checkbox.checked = true;
 
-            view.appendChild(checkbox);
-            view.appendChild(label);
+            alerta.appendChild(checkbox);
+            alerta.appendChild(label);
+            view.appendChild(alerta);
         });
     })
+}
+
+function mostrarMeusAlertas(e){
+    e.classList.toggle("up");
+    e.parentNode.parentNode.classList.toggle("show");
+    
 }
