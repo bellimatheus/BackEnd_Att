@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../global/checkLogin.js"></script>
+    <link rel="stylesheet" href="./style.css">
+    
+    <title>Usuario</title>
+</head>
+<body onload="load()">
+    <header>
+        <img src="../assets/cardapio.png" id="iconMenu" onclick="showMenu()" alt="Menu">
+        <img src="../assets/MicrosoftTeams-image.png" class="logo" alt="Logo">
+        <ul>
+            <li><a href="../home/">Home</a></li>
+            <li><a onclick="logout()">Sair</a></li>
+        </ul>
+    </header>
+
+    <div class="menu">
+        <span onclick="closeMenu()">
+            <img src="../assets/cancel.png" alt="Fechar">
+        </span>
+        <ul>
+            <li><a href="../mapa/">Home</a></li>
+            <li><a onclick="logout()">Sair</a></li>
+        </ul>
+    </div>
+
+
+    <main>
+        <div class="dados">
+            <img src="" id="imgUser" width="150">
+            <input type="text" id="emailUser">
+            <input type="password" id="pswUser">
+            <input type="file" id="foto" hidden>
+            <img src="../assets/camera.png" id="cam" alt="Camera" width="32" >
+            <button onclick="atualizarDados()">Update</button>
+        
+        </div>
+        <div class="dir">
+            <div class="alertas">
+                <div class="title">
+                    <h2>Alertas</h2>
+                    <img src="../assets/setas-para-cima.png" onclick="mostrarMeusAlertas(this)" class="seta" alt="Seta">
+                </div>
+                <div class="containerdata" id="alerts" ></div>
+                <button onclick="salvarAlertasAtivos()" ></button>
+            </div>
+        </div>
+
+        <div class="alertas">
+            <div class="title">
+                <h2>Meus Alertas</h2>
+                <img src="../assets/setas-para-cima.png" onclick="mostrarMeusAlertas(this)" class="seta up" alt="Seta">
+            </div>
+
+            <div class="containerdata">
+                <table id="show">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Coord</th>
+                            <th>Tipo</th>
+                        </tr>
+                    </thead>
+
+                    <tbody></tbody>
+
+                </table>
+            </div>
+        </div>
+    </main>
+    
+</body>
+<script src="../global/md5.js"> </script>
+<script src="../global/functions.js"></script>
+<script src="script.js"></script>
+
+</html>

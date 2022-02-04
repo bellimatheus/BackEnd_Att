@@ -1,0 +1,106 @@
+@import url('../global/global.css');
+
+.alertas {
+    width: 90vw;
+    height: 2.89rem;
+    border: 1px solid gray;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 10px;
+    transition: all .3s; 
+}
+
+.show{
+    height: 18rem;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.seta{
+    transition: all .2s;
+}
+
+.up{
+    transform: rotate(180deg)
+}
+
+
+.containerdata{
+    margin-top: 5pt;
+    height: 15rem;
+    overflow: scroll;
+}
+
+
+table{
+    width: 100%;
+    color: black;
+}
+
+thead{
+    background-color: aquamarine;
+    
+}
+
+tbody > tr{
+    background-color: var(--base-color);
+}
+
+tbody > tr:nth-child(odd){
+    background-color: #71acf0;
+}
+
+#alerts{
+    display: flex;
+    flex-direction: column;
+    height: 10rem;
+}
+
+#alerts > div{
+    margin: 7px;
+    
+}
+
+#alerts label {
+    font-size: 1.25rem;
+    margin-left: 10px;
+}
+
+.dados{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+main {
+    width: 100vw;
+    height: 90%;
+    background-color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+
+button{
+    margin-bottom: 10px;
+}
+
+@media (min-width: 800px) {
+    main {
+        flex-direction: row;
+    }
+
+    .dados {
+        width: 50%;
+    }
+
+    .dir {
+        width: 50%;
+    }
+}
