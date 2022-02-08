@@ -4,3 +4,5 @@ npm install expo-image-picker
 npm install md5
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+https://docs.expo.dev/versions/latest/sdk/location/
