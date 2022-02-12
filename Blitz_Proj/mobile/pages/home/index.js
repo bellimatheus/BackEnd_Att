@@ -5,29 +5,29 @@ import {View, Dimensions, StyleSheet, ToastAndroid, Image, Modal, TouchableOpaci
 import MapView, { Marker } from 'react-native-maps';
 
 import {Picker} from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
-export default function Home(){
+export default function Home() {
   const tipos = [
-    require('../../assets/app/1.png'),
-    require('../../assets/app/1.png'),
-    require('../../assets/app/1.png'),
-    require('../../assets/app/1.png'),
-    require('../../assets/app/1.png'),
-    require('../../assets/app/1.png')
+      require('../../assets/app/1.png'), 
+      require('../../assets/app/2.png'), 
+      require('../../assets/app/3.png'),
+      require('../../assets/app/4.png'),
+      require('../../assets/app/5.png'),
+      require('../../assets/app/6.png')
   ]
-
-  const [alertas, setAlertas] = useState([])
-  const [coordAl, setCoordAl] = useState("");
-  const [showModal, setShowModal] = useState(false)
+  
+  const [alertas, setAlertas] = useState([]);
+  const [coordAlerta, setCoordAlerta] = useState("");
+  const [showModal, setShowModal] = useState(false);
   const [valuePicker, setValuePicker] = useState();
-  const [marcadores, setMarcadores] = useState([])
+  const [marcadores, setMarcadores] = useState([]);
   const [coord, setCoord] = useState({
       latitude: 37.78825,
       longitude: -122.4324,
-  });
-  
-    useEffect(async () => {
+  })
+
+  useEffect(async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
 
       if (status !== 'granted') {
@@ -35,125 +35,138 @@ export default function Home(){
       }else {
           let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation});
 
-          console.log(location);
           setCoord({
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude
           });
 
           let posi = {
-            coordenadas: location.coords.latitude +', '+ location.coords.longitude,
-            alertum: { 
-              id: "marker",
-              tipo: "marker",
-              descricao: "Minha localização",
-            },
-            image: require(`../../assets/app/localiz.png`)
+              coordenadas: location.coords.latitude + ',' + location.coords.longitude,
+              alertum: {
+                  id: "marker",
+                  tipo: "marker",
+                  descricao: "Minha Localização",
+              },                
+              image: require(`../../assets/app/localiz.png`)
           }
 
           let arr = [];
+
           arr.push(posi);
-          setMarcadores(arr)
-          carregarAlertas()
-          listarAlertas()
+
+          setMarcadores(arr);
+
+          carregarAlertas();
+
+          listarAlertas();
       }
-    }, []);
+  }, []);
 
-    const listarAlertas = () => {
-      fetch('http://10.87.207.4/alerta')
-      .then(resp => {return resp.json()})
+  const listarAlertas = () => {
+      fetch('http://10.87.207.4:3000/alerta')
+      .then(resp => { return resp.json()})
       .then(data => {
-        setAlertas(data);
+          setAlertas(data);
       })
-    }
+  }
 
-    const carregarAlertas = () => {
-      fetch("http://10.87.207.4:3000/local")
-      .then(resp => {return resp.json()})
+  const carregarAlertas = () => {
+      fetch('http://10.87.207.4:3000/local')
+      .then(resp => { return resp.json() })
       .then(data => {
-        let tempArr = marcadores;
-        
-
-        data.forEach(item => {
-          item.image = tipos[item.alertum.id - 1]
-          tempArr.push(item);
-          
-        })
-        setMarcadores(tempArr)
+          let tempArr = marcadores;
+          data.forEach(item => {
+              item.image = tipos[item.alertum.id - 1];
+              tempArr.push(item);
+          })
+          setMarcadores(tempArr);
       })
-    }
-    const cadastrarAlerta = () => {
-      console.log(valuePicker)
-    }
+  }
+
+  const cadastrarAlerta = async () => {
+      let idUser = JSON.parse(await AsyncStorage.getItem('userdata')).id;
+      let data = {
+          coordenadas: coordAlerta,
+          id_user: idUser,
+          id_alerta: valuePicker,
+          ativo: true,
+      }
+
+      fetch('http://10.87.207.4:3000/local', {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data),
+      })
+      .then(resp => { return resp.json()})
+      .then(data => {
+          setShowModal(false);
+      })
+  }
 
     const algumaAcao = (e) => {
       
       let coord = (e.nativeEvent.coordinate.latitude+ ', ' +e.nativeEvent.coordinate.longitude)
-      setCoordAl(coord);
+      setCoordAlerta(coord);
       setShowModal(true)
     }
 
 
     return(
-        <View style={styles.container}>
-            <MapView 
+      <View style={styles.container}>
+          <MapView 
               style={styles.map} 
-              region = {{
-                  ...coord, // latitude; coord.latitude ----- longitude: coord.longitude
+              region={{
+                  ...coord,
                   latitudeDelta: 0.0065,
-                  longitudeDelta: 0.0065,
-                }}
-                onPress={algumaAcao}
-              >
-                {
-                    marcadores.map((marcador, index) => {
-                        let loc = marcador.coordenadas.split(',');
-                        
-                        return(
-                            <Marker
-                            
-                                key={index}
-                                coordinate={{
-                                    latitude: Number(loc[0]),
-                                    longitude: Number(loc[1]),
-                                }}
-                                title={marcador.alertum.tipo}
-                                description={""}
-                            >
-                                <Image source={marcador.image} style={styles.marcador} />
-                                
-                            </Marker>
-                        )
-                    })
-                } 
-
-            </MapView>
-            <Modal
-              visible={showModal}
-            >
-              <Picker
-                selectedValue={valuePicker}
-                onValueChange={(itemValue, itemIndex) =>
-                  setValuePicker(itemValue)
-                }
-            >
-                {
-                  alertas.map((alerta, index) => {
-                    
-                    return(
-                      <Picker.Item label={alerta.tipo} value={alerta.id} key={index}/>
-                    )
+                  longitudeDelta: 0.00065,
+              }}
+              onPress={algumaAcao}
+          >
+              {
+                  marcadores.map((marcador, index) => {
+                      let loc = marcador.coordenadas.split(',');
+                      return(
+                          <Marker
+                              key={index}
+                              coordinate={{
+                                  latitude: Number(loc[0]),
+                                  longitude: Number(loc[1]),
+                              }}
+                              title={marcador.alertum.tipo}
+                              description={""}
+                          >
+                              <Image source={marcador.image} style={styles.marcador} />
+                          </Marker>
+                      )
                   })
-                }
-
+              }                
+          </MapView>
+          <Modal
+              visible={showModal}
+          >
+              <Picker
+                  selectedValue={valuePicker}
+                  onValueChange={(itemValue, itemIndex) =>
+                      setValuePicker(itemValue)
+                  }
+              >
+                  { 
+                      alertas.map((alerta, index) => {
+                          return(
+                              <Picker.Item label={alerta.tipo} value={alerta.id} key={index} />
+                          )
+                      })
+                  }
               </Picker>
-              <TouchableOpacity onPress={() => {cadastrarAlerta()}}>
-                <Text>Cadastrar alerta</Text>
+
+              <TouchableOpacity onPress={() => cadastrarAlerta()}>
+                  <Text>Cadastrar alerta</Text>
               </TouchableOpacity>
-            </Modal>
-            
-        </View>
-    )
+          </Modal>
+      </View>
+  )
 }
 
 const styles = StyleSheet.create({
