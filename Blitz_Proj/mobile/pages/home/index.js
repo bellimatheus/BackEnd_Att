@@ -1,187 +1,188 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 
 import * as Location from 'expo-location';
-import {View, Dimensions, StyleSheet, ToastAndroid, Image, Modal, TouchableOpacity, Text} from 'react-native';
+import { View, Dimensions, StyleSheet, ToastAndroid, Image, Modal, TouchableOpacity, Text } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import {Picker} from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home() {
-  const tipos = [
-      require('../../assets/app/1.png'), 
-      require('../../assets/app/2.png'), 
-      require('../../assets/app/3.png'),
-      require('../../assets/app/4.png'),
-      require('../../assets/app/5.png'),
-      require('../../assets/app/6.png')
-  ]
-  
-  const [alertas, setAlertas] = useState([]);
-  const [coordAlerta, setCoordAlerta] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [valuePicker, setValuePicker] = useState();
-  const [marcadores, setMarcadores] = useState([]);
-  const [coord, setCoord] = useState({
-      latitude: 37.78825,
-      longitude: -122.4324,
-  })
+    const tipos = [
+        require('../../assets/app/1.png'),
+        require('../../assets/app/2.png'),
+        require('../../assets/app/3.png'),
+        require('../../assets/app/4.png'),
+        require('../../assets/app/5.png'),
+        require('../../assets/app/6.png')
+    ]
 
-  useEffect(async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
+    const [alertas, setAlertas] = useState([]);
+    const [coordAlerta, setCoordAlerta] = useState("");
+    const [showModal, setShowModal] = useState(false);
+    const [valuePicker, setValuePicker] = useState();
+    const [marcadores, setMarcadores] = useState([]);
+    const [coord, setCoord] = useState({
+        latitude: 37.78825,
+        longitude: -122.4324,
+    })
 
-      if (status !== 'granted') {
-          ToastAndroid.show('Localização negada', ToastAndroid.SHORT);
-      }else {
-          let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation});
+    useEffect(async () => {
+        let { status } = await Location.requestForegroundPermissionsAsync();
 
-          setCoord({
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude
-          });
+        if (status !== 'granted') {
+            ToastAndroid.show('Localização negada', ToastAndroid.SHORT);
+        } else {
+            let location = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.BestForNavigation });
 
-          let posi = {
-              coordenadas: location.coords.latitude + ',' + location.coords.longitude,
-              alertum: {
-                  id: "marker",
-                  tipo: "marker",
-                  descricao: "Minha Localização",
-              },                
-              image: require(`../../assets/app/localiz.png`)
-          }
+            setCoord({
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+            });
 
-          let arr = [];
+            let posi = {
+                coordenadas: location.coords.latitude + ',' + location.coords.longitude,
+                alertum: {
+                    id: "marker",
+                    tipo: "marker",
+                    descricao: "Minha Localização",
+                },
+                image: require(`../../assets/app/marker.png`)
+            }
 
-          arr.push(posi);
+            let arr = [];
 
-          setMarcadores(arr);
+            arr.push(posi);
 
-          carregarAlertas();
+            setMarcadores(arr);
 
-          listarAlertas();
-      }
-  }, []);
+            carregarAlertas();
 
-  const listarAlertas = () => {
-      fetch('http://10.87.207.4:3000/alerta')
-      .then(resp => { return resp.json()})
-      .then(data => {
-          setAlertas(data);
-      })
-  }
+            listarAlertas();
+        }
+    }, []);
 
-  const carregarAlertas = () => {
-      fetch('http://10.87.207.4:3000/local')
-      .then(resp => { return resp.json() })
-      .then(data => {
-          let tempArr = marcadores;
-          data.forEach(item => {
-              item.image = tipos[item.alertum.id - 1];
-              tempArr.push(item);
-          })
-          setMarcadores(tempArr);
-      })
-  }
+    const listarAlertas = () => {
+        fetch('http://192.168.0.108:3000/alerta')
+            .then(resp => { return resp.json() })
+            .then(data => {
+                setAlertas(data);
+            })
+    }
 
-  const cadastrarAlerta = async () => {
-      let idUser = JSON.parse(await AsyncStorage.getItem('userdata')).id;
-      let data = {
-          coordenadas: coordAlerta,
-          id_user: idUser,
-          id_alerta: valuePicker,
-          ativo: true,
-      }
+    const carregarAlertas = () => {
+        fetch('http://192.168.0.108:3000/local')
+            .then(resp => { return resp.json() })
+            .then(data => {
+                let tempArr = marcadores;
+                data.forEach(item => {
+                    item.image = tipos[item.alertum.id - 1];
+                    tempArr.push(item);
+                })
+                setMarcadores(tempArr);
+            })
+    }
 
-      fetch('http://10.87.207.4:3000/local', {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json"
-          },
-          body: JSON.stringify(data),
-      })
-      .then(resp => { return resp.json()})
-      .then(data => {
-          setShowModal(false);
-      })
-  }
+    const cadastrarAlerta = async () => {
+        let idUser = JSON.parse(await AsyncStorage.getItem('userdata')).id;
+        let data = {
+            coordenadas: coordAlerta,
+            id_user: idUser,
+            id_alerta: valuePicker,
+            ativo: true,
+        }
+
+        fetch('http://192.168.0.108:3000/local', {
+            method: "POST",
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data),
+        })
+            .then(resp => { return resp.json() })
+            .then(data => {
+                setShowModal(false);
+            })
+    }
 
     const algumaAcao = (e) => {
-      
-      let coord = (e.nativeEvent.coordinate.latitude+ ', ' +e.nativeEvent.coordinate.longitude)
-      setCoordAlerta(coord);
-      setShowModal(true)
+
+        let coord = (e.nativeEvent.coordinate.latitude + ', ' + e.nativeEvent.coordinate.longitude)
+        setCoordAlerta(coord);
+        setShowModal(true)
     }
 
 
-    return(
-      <View style={styles.container}>
-          <MapView 
-              style={styles.map} 
-              region={{
-                  ...coord,
-                  latitudeDelta: 0.0065,
-                  longitudeDelta: 0.00065,
-              }}
-              onPress={algumaAcao}
-          >
-              {
-                  marcadores.map((marcador, index) => {
-                      let loc = marcador.coordenadas.split(',');
-                      return(
-                          <Marker
-                              key={index}
-                              coordinate={{
-                                  latitude: Number(loc[0]),
-                                  longitude: Number(loc[1]),
-                              }}
-                              title={marcador.alertum.tipo}
-                              description={""}
-                          >
-                              <Image source={marcador.image} style={styles.marcador} />
-                          </Marker>
-                      )
-                  })
-              }                
-          </MapView>
-          <Modal
-              visible={showModal}
-          >
-              <Picker
-                  selectedValue={valuePicker}
-                  onValueChange={(itemValue, itemIndex) =>
-                      setValuePicker(itemValue)
-                  }
-              >
-                  { 
-                      alertas.map((alerta, index) => {
-                          return(
-                              <Picker.Item label={alerta.tipo} value={alerta.id} key={index} />
-                          )
-                      })
-                  }
-              </Picker>
+    return (
+        <View style={styles.container}>
+            <MapView
+                style={styles.map}
+                region={{
+                    ...coord,
+                    latitudeDelta: 0.0065,
+                    longitudeDelta: 0.00065,
+                }}
+                onPress={algumaAcao}
+            >
+                {
+                    marcadores.map((marcador, index) => {
+                        let loc = marcador.coordenadas.split(',');
+                        return (
+                            <Marker
+                                key={index}
+                                coordinate={{
+                                    latitude: Number(loc[0]),
+                                    longitude: Number(loc[1]),
+                                }}
+                                title={marcador.alertum.tipo}
+                                description={""}
+                            >
+                                <Image source={marcador.image} style={styles.marcador} />
+                            </Marker>
+                        )
+                    })
+                }
+            </MapView>
+            <Modal
+                visible={showModal}
+            >
+                <Picker
+                    selectedValue={valuePicker}
+                    onValueChange={(itemValue, itemIndex) =>
+                        setValuePicker(itemValue)
+                    }
+                >
+                    {
+                        alertas.map((alerta, index) => {
+                            return (
+                                <Picker.Item label={alerta.tipo} value={alerta.id} key={index} />
+                            )
+                        })
+                    }
+                </Picker>
 
-              <TouchableOpacity onPress={() => cadastrarAlerta()}>
-                  <Text>Cadastrar alerta</Text>
-              </TouchableOpacity>
-          </Modal>
-      </View>
-  )
+                <TouchableOpacity onPress={() => cadastrarAlerta()}>
+                    <Text>Cadastrar alerta</Text>
+                </TouchableOpacity>
+            </Modal>
+        </View>
+    )
 }
 
 const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'center',
-      justifyContent: 'center',
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     map: {
-      width: Dimensions.get('window').width,
-      height: Dimensions.get('window').height,
+        width: Dimensions.get('window').width,
+        height: Dimensions.get('window').height,
     },
     marcador: {
-      width: 32, 
-      height: 32,
+        width: 32,
+        height: 32,
     }
-  });
+});
